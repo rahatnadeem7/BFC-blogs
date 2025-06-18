@@ -55,7 +55,7 @@ export function BlogListRealtime() {
             <div className="mb-16 text-center">
               <h2 className="text-4xl lg:text-5xl font-semibold text-gray-900 mb-4 tracking-tight">Latest Stories</h2>
               <p className="text-xl text-gray-600 font-normal max-w-2xl mx-auto">
-                Discover insights that shape the future of technology.
+              Dive into matchday drama, player spotlights, and the stories that define the beautiful game.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
