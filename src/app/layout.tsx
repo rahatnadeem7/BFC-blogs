@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://bfc-blogs.vercel.app",
-    title: "BFC Blogs - Technology and Design Stories",
-    description: "Stories that inspire innovation and creativity in technology and design.",
+    title: "BFC Blogs - More than a club",
+    description: "Dive into matchday drama, player spotlights, and the stories that define the beautiful game.",
     siteName: "BFC Blogs",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BFC Blogs - Technology and Design Stories",
-    description: "Stories that inspire innovation and creativity in technology and design.",
+    title: "BFC Blogs - More than a club",
+    description: "Dive into matchday drama, player spotlights, and the stories that define the beautiful game.",
     creator: "@bfc",
   },
   robots: {
