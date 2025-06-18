@@ -6,15 +6,15 @@
   "framework": "nextjs",
   "regions": ["sin1"],
   "env": {
-    "NEXT_PUBLIC_FIREBASE_API_KEY": "@firebase_api_key",
-    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN": "@firebase_auth_domain",
-    "NEXT_PUBLIC_FIREBASE_PROJECT_ID": "@firebase_project_id",
-    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET": "@firebase_storage_bucket",
-    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "@firebase_messaging_sender_id",
-    "NEXT_PUBLIC_FIREBASE_APP_ID": "@firebase_app_id",
-    "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID": "@firebase_measurement_id",
-    "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "@cloudinary_cloud_name",
-    "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "@cloudinary_upload_preset",
-    "NEXT_PUBLIC_SITE_URL": "@site_url"
+    "NEXT_PUBLIC_FIREBASE_API_KEY": "AIzaSyDNqkeWCM_CLmL__zEpsn1d954RhBudlmY",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN": "bfc-blog-b6bfb.firebaseapp.com",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID": "bfc-blog-b6bfb",
+    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET": "bfc-blog-b6bfb.firebasestorage.app",
+    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "739777357790",
+    "NEXT_PUBLIC_FIREBASE_APP_ID": "1:739777357790:web:d213cfc915f924d46cdf4f",
+    "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID": "G-D4E3S7KPB7",
+    "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "dgahlqrhz",
+    "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "blog_upload",
+    "NEXT_PUBLIC_SITE_URL": "https://bfc-blogs.vercel.app"
   }
 } 

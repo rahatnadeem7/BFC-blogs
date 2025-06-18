@@ -2,7 +2,7 @@
 
 import type React from "react"
 import Link from "next/link"
-
+import Image from "next/image"
 import { useState } from "react"
 import { db } from "@/lib/firebase"
 import { addDoc, collection, Timestamp } from "firebase/firestore"
@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 
-import { Upload, FileText, Send, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Upload, FileText, Send, AlertCircle } from "lucide-react"
 
 export default function AdminPage() {
   const [title, setTitle] = useState("")
@@ -69,8 +69,7 @@ export default function AdminPage() {
     if (!validateForm()) {
       toast({
         title: "Validation Error",
-        description: "Please fix the errors below",
-        variant: "destructive",
+        description: "Please fix the errors below"
       })
       return
     }
@@ -136,12 +135,11 @@ export default function AdminPage() {
       setImage(null)
       setImagePreview(null)
       setErrors({})
-    } catch (err: any) {
-      console.error("Upload error:", err)
+    } catch (error: unknown) {
+      console.error("Upload error:", error)
       toast({
         title: "Upload Failed",
-        description: err.message || "Something went wrong",
-        variant: "destructive",
+        description: error instanceof Error ? error.message : "Something went wrong"
       })
     } finally {
       setLoading(false)
@@ -282,20 +280,13 @@ export default function AdminPage() {
 
                   {/* Image Preview */}
                   {imagePreview && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-slate-700">Preview</Label>
-                      <div className="relative h-32 rounded-lg overflow-hidden border">
-                        <img
-                          src={imagePreview || "/placeholder.svg"}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-2 right-2">
-                          <div className="bg-green-500 text-white p-1 rounded-full">
-                            <CheckCircle2 className="h-3 w-3" />
-                          </div>
-                        </div>
-                      </div>
+                    <div className="relative w-full h-48 mb-4">
+                      <Image
+                        src={imagePreview}
+                        alt="Preview"
+                        fill
+                        className="object-cover rounded-lg"
+                      />
                     </div>
                   )}
                 </div>

@@ -6,7 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner"
 import { Trash2, Pencil } from "lucide-react"
 import { db } from "@/lib/firebase"
-import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore"
+import { collection, getDocs, deleteDoc, doc, query, orderBy, Timestamp } from "firebase/firestore"
 import Link from "next/link"
 
 interface Blog {
@@ -15,7 +15,7 @@ interface Blog {
   summary: string
   content: string
   imageUrl: string
-  createdAt: any
+  createdAt: Timestamp
   slug: string
 }
 
@@ -59,10 +59,9 @@ export default function BlogsPage() {
     }
   }
 
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: Timestamp) => {
     if (!timestamp) return "No date"
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-    return date.toLocaleDateString("en-US", {
+    return timestamp.toDate().toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",

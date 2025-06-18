@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
 import { findAdminByEmail } from "@/config/admins"
 
 // Simple in-memory rate limiting

@@ -3,6 +3,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { db } from "@/lib/firebase";
 import {
   doc,
@@ -27,8 +28,6 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
       const ref = doc(db, "blogs", id);
       const snapshot = await getDoc(ref);
       if (snapshot.exists()) {
-
-
         const data = snapshot.data();
         setTitle(data.title);
         setSummary(data.summary);
@@ -77,8 +76,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
 
       alert("✅ Blog updated!");
       router.push("/dashboard/blogs");
-    } catch (err: any) {
-      console.error(err);
+    } catch (error: unknown) {
+      console.error('Error updating blog:', error);
       alert("❌ Failed to update blog");
     } finally {
       setLoading(false);
@@ -112,11 +111,14 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         />
 
         <p className="text-sm text-gray-600">Current Image:</p>
-        <img
-          src={imageUrl}
-          alt="Current blog image"
-          className="w-full h-48 object-cover rounded mb-2"
-        />
+        <div className="relative w-full h-48 mb-2">
+          <Image
+            src={imageUrl}
+            alt="Current blog image"
+            fill
+            className="object-cover rounded"
+          />
+        </div>
         <input
           type="file"
           onChange={(e) => setNewImage(e.target.files?.[0] || null)}

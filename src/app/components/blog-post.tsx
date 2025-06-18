@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import type { BlogPostType } from "@/lib/types"
+import { Timestamp } from "firebase/firestore"
 
 interface BlogPostProps {
   post: BlogPostType
@@ -12,12 +13,12 @@ export function BlogPost({ post, featured = false }: BlogPostProps) {
     return null
   }
 
-  const formatDate = (date: any) => {
+  const formatDate = (date: Timestamp | Date | undefined) => {
     if (!date) return "No date"
     
     try {
       // Handle Firebase Timestamp
-      if (date.toDate && typeof date.toDate === 'function') {
+      if (date instanceof Timestamp) {
         return date.toDate().toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",

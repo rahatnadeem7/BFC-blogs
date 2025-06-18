@@ -29,6 +29,10 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
 
+      if (!response.ok) {
+        throw new Error('Login failed')
+      }
+
       const data = await response.json()
 
       if (data.success) {
@@ -44,8 +48,8 @@ export default function LoginPage() {
       } else {
         toast.error(data.message || "Invalid credentials")
       }
-    } catch (error) {
-      toast.error("An error occurred. Please try again.")
+    } catch {
+      toast.error('Login failed. Please check your credentials.')
     } finally {
       setIsLoading(false)
     }

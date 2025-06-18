@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app"
-import { getFirestore, collection, getDocs, query, orderBy, where, limit } from "firebase/firestore"
+import { getFirestore, collection, getDocs, query, orderBy, where, limit, Timestamp } from "firebase/firestore"
 import type { BlogPostType } from "./types"
 
 const firebaseConfig = {
@@ -17,7 +17,7 @@ const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
 
 // Error handling wrapper
-const handleFirebaseError = (error: any, operation: string) => {
+const handleFirebaseError = (error: Error, operation: string) => {
   console.error(`Firebase ${operation} error:`, error)
   throw new Error(`Failed to ${operation}: ${error.message}`)
 }
@@ -32,7 +32,7 @@ export async function getBlogPosts(): Promise<BlogPostType[]> {
       ...doc.data(),
     })) as BlogPostType[]
   } catch (error) {
-    handleFirebaseError(error, "fetch blog posts")
+    handleFirebaseError(error as Error, "fetch blog posts")
     return []
   }
 }
@@ -52,7 +52,7 @@ export async function getBlogPost(slug: string): Promise<BlogPostType | null> {
 
     return null
   } catch (error) {
-    handleFirebaseError(error, "fetch blog post")
+    handleFirebaseError(error as Error, "fetch blog post")
     return null
   }
 }
@@ -72,18 +72,18 @@ export async function getFeaturedPosts(): Promise<BlogPostType[]> {
       ...doc.data(),
     })) as BlogPostType[]
   } catch (error) {
-    handleFirebaseError(error, "fetch featured posts")
+    handleFirebaseError(error as Error, "fetch featured posts")
     // If no featured posts, return first 3 regular posts
     const allPosts = await getBlogPosts()
     return allPosts.slice(0, 3)
   }
 }
 
-export function formatFirebaseDate(timestamp: any): string {
+export function formatFirebaseDate(timestamp: Timestamp | Date | string | undefined): string {
   if (!timestamp) return ""
 
   // Handle Firebase Timestamp
-  if (timestamp.toDate) {
+  if (timestamp instanceof Timestamp) {
     return timestamp.toDate().toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
