@@ -7,11 +7,11 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "BFC Blogs - Technology and Design Stories",
+    default: "BFC Blogs - More than a club",
     template: "%s | BFC Blogs"
   },
-  description: "Stories that inspire innovation and creativity in technology and design.",
-  keywords: ["technology", "design", "innovation", "blog", "stories"],
+  description: "Dive into matchday drama, player spotlights, and the stories that define the beautiful game.",
+  keywords: ["game", "football", "club", "blog", "stories"],
   authors: [{ name: "BFC Team" }],
   creator: "BFC",
   publisher: "BFC",
