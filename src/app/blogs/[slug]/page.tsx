@@ -61,9 +61,9 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/">
-              <button className="flex items-center text-gray-600 hover:text-gray-900">
+              <button className="text-gray-600 hover:text-gray-900">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                <span>Back to Stories</span>
+                Back to Stories
               </button>
             </Link>
             <ShareButton post={serializedPost} />
