@@ -20,6 +20,11 @@ export const adminUsers: AdminUser[] = [
     email: "arham@bfc.com",
     password: "arham29",
     name: "Arham Vaid"
+  },
+  {
+    email: "umer@bfc.com",
+    password: "pedri",
+    name: "Omer Pedri"
   }
 ]
 
