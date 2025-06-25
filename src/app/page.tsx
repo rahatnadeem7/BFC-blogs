@@ -26,11 +26,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        {/* Swipe-down indicator */}
-        <div className="absolute bottom-4 left-0 w-full flex flex-col items-center animate-bounce">
-          <ChevronDown className="h-6 w-6 text-gray-600" />
-          <p className="text-sm text-gray-600 mt-2 hidden sm:block">Scroll down to explore</p>
-        </div>
+        
       </section>
       <BlogListRealtime />
     </div>
