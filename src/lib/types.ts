@@ -7,6 +7,7 @@ export interface BlogPostType {
     summary: string
     content: string
     imageUrl: string // Cloudinary URL
+    imageUrls?: string[] // Array of Cloudinary URLs for multiple images
     createdAt?: Timestamp // Firebase Timestamp
     updatedAt?: Timestamp // Firebase Timestamp
     author?: {

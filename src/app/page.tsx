@@ -1,5 +1,5 @@
 import { BlogListRealtime } from "@/app/components/BlogListRealtime"
-import { ChevronDown } from "lucide-react"
+import Image from "next/image"
 
 export default function Home() {
   return (
@@ -9,9 +9,11 @@ export default function Home() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-center gap-6">
           {/* Logo Left */}
           <div className="flex-shrink-0">
-            <img
+            <Image
               src="/BijbeharaFC Logo.png"
               alt="Bijbehara Football Club Logo"
+              width={500}
+              height={500}
               className="h-26 w-26 object-contain"
             />
           </div>

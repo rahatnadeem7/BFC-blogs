@@ -20,8 +20,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [newImage, setNewImage] = useState<File | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -32,7 +32,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         setTitle(data.title);
         setSummary(data.summary);
         setContent(data.content);
-        setImageUrl(data.imageUrl);
+        setImageUrls(data.imageUrls || (data.imageUrl ? [data.imageUrl] : []));
         setLoading(false);
       } else {
         alert("Blog not found");
@@ -42,19 +42,34 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
     fetchBlog();
   }, [id, router]);
 
+  const handleNewImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    // Add new files to existing newImages, avoiding duplicates
+    const newFiles = files.filter(
+      file => !newImages.some(img => img.name === file.name && img.size === file.size)
+    );
+    setNewImages([...newImages, ...newFiles]);
+  };
+
+  const handleRemoveImage = (idx: number) => {
+    setImageUrls(imageUrls.filter((_, i) => i !== idx));
+  };
+
+  const handleRemoveNewImage = (idx: number) => {
+    setNewImages(newImages.filter((_, i) => i !== idx));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      let finalImageUrl = imageUrl;
-
-      // Optional: Re-upload image if changed
-      if (newImage) {
+      const finalImageUrls = [...imageUrls];
+      // Upload new images to Cloudinary
+      for (const img of newImages) {
         const formData = new FormData();
-        formData.append("file", newImage);
+        formData.append("file", img);
         formData.append("upload_preset", "blog_upload");
-
         const uploadRes = await fetch(
           "https://api.cloudinary.com/v1_1/dgahlqrhz/image/upload",
           {
@@ -63,14 +78,14 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
           }
         );
         const uploadData = await uploadRes.json();
-        finalImageUrl = uploadData.secure_url;
+        finalImageUrls.push(uploadData.secure_url);
       }
 
       await updateDoc(doc(db, "blogs", id), {
         title,
         summary,
         content,
-        imageUrl: finalImageUrl,
+        imageUrls: finalImageUrls,
         updatedAt: Timestamp.now(),
       });
 
@@ -110,19 +125,58 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
           onChange={(e) => setContent(e.target.value)}
         />
 
-        <p className="text-sm text-gray-600">Current Image:</p>
-        <div className="relative w-full h-48 mb-2">
-          <Image
-            src={imageUrl}
-            alt="Current blog image"
-            fill
-            className="object-cover rounded"
-          />
+        <p className="text-sm text-gray-600">Current Images:</p>
+        <div className="flex gap-2 flex-wrap mb-2">
+          {imageUrls.map((url, idx) => (
+            <div key={idx} className="relative w-32 h-32">
+              <Image
+                width={800}   
+                height={450}
+                src={url}
+                alt={`Current image ${idx + 1}`}
+                fill
+                className="object-cover rounded"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(idx)}
+                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                title="Remove image"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
         </div>
+        <p className="text-sm text-gray-600">Add More Images:</p>
         <input
           type="file"
-          onChange={(e) => setNewImage(e.target.files?.[0] || null)}
+          multiple
+          accept="image/*"
+          onChange={handleNewImages}
         />
+        {newImages.length > 0 && (
+          <div className="flex gap-2 flex-wrap mt-2">
+            {newImages.map((file, idx) => (
+              <div key={idx} className="relative w-32 h-32">
+                <Image
+                  src={URL.createObjectURL(file)}
+                  alt={`New image ${idx + 1}`}
+                  fill
+                  className="object-cover rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveNewImage(idx)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  title="Remove new image"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         <button
           type="submit"

@@ -21,11 +21,11 @@ export default function AdminPage() {
   const [title, setTitle] = useState("")
   const [summary, setSummary] = useState("")
   const [content, setContent] = useState("")
-  const [image, setImage] = useState<File | null>(null)
+  const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
 
   const { toast } = useToast()
 
@@ -35,7 +35,7 @@ export default function AdminPage() {
     if (!title.trim()) newErrors.title = "Title is required"
     if (!summary.trim()) newErrors.summary = "Summary is required"
     if (!content.trim()) newErrors.content = "Content is required"
-    if (!image) newErrors.image = "Please select an image"
+    if (images.length === 0) newErrors.image = "Please select at least one image"
 
     if (title.length > 100) newErrors.title = "Title must be less than 100 characters"
     if (summary.length > 200) newErrors.summary = "Summary must be less than 200 characters"
@@ -45,23 +45,22 @@ export default function AdminPage() {
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null
-    setImage(file)
-
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
-    } else {
-      setImagePreview(null)
-    }
-
+    const files = Array.from(e.target.files || []);
+    // Add new files to existing images, avoiding duplicates
+    const newFiles = files.filter(
+      file => !images.some(img => img.name === file.name && img.size === file.size)
+    );
+    const updatedImages = [...images, ...newFiles];
+    setImages(updatedImages);
+  
+    // Generate previews for all images
+    const previews = updatedImages.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
+  
     if (errors.image) {
-      setErrors((prev) => ({ ...prev, image: "" }))
+      setErrors((prev) => ({ ...prev, image: "" }));
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -89,23 +88,27 @@ export default function AdminPage() {
         })
       }, 200)
 
-      // Upload to Cloudinary
-      const formData = new FormData()
-      formData.append("file", image!)
-      formData.append("upload_preset", "blog_upload")
+      // Upload all images to Cloudinary
+      const imageUrls: string[] = [];
+      for (const img of images) {
+        const formData = new FormData();
+        formData.append("file", img);
+        formData.append("upload_preset", "blog_upload");
 
-      const uploadRes = await fetch("https://api.cloudinary.com/v1_1/dgahlqrhz/image/upload", {
-        method: "POST",
-        body: formData,
-      })
+        const uploadRes = await fetch("https://api.cloudinary.com/v1_1/dgahlqrhz/image/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-      const uploadData = await uploadRes.json()
+        const uploadData = await uploadRes.json();
 
-      if (!uploadRes.ok) {
-        throw new Error(uploadData.error?.message || "Upload failed")
+        if (!uploadRes.ok) {
+          throw new Error(uploadData.error?.message || "Upload failed");
+        }
+
+        imageUrls.push(uploadData.secure_url);
       }
 
-      const imageUrl = uploadData.secure_url
       setUploadProgress(95)
 
       // Save blog to Firestore
@@ -113,7 +116,7 @@ export default function AdminPage() {
         title: title.trim(),
         summary: summary.trim(),
         content: content.trim(),
-        imageUrl,
+        imageUrls,
         createdAt: Timestamp.now(),
         slug: title
           .toLowerCase()
@@ -132,8 +135,8 @@ export default function AdminPage() {
       setTitle("")
       setSummary("")
       setContent("")
-      setImage(null)
-      setImagePreview(null)
+      setImages([])
+      setImagePreviews([])
       setErrors({})
     } catch (error: unknown) {
       console.error("Upload error:", error)
@@ -248,14 +251,14 @@ export default function AdminPage() {
 
               {/* Image Upload */}
               <div className="space-y-4">
-                <Label className="text-sm font-semibold text-slate-700">Featured Image *</Label>
-
+                <Label className="text-sm font-semibold text-slate-700">Images *</Label>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <div className="relative">
                       <Input
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={handleImageChange}
                         className="hidden"
                         id="image-upload"
@@ -265,11 +268,12 @@ export default function AdminPage() {
                         className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
                       >
                         <Upload className="h-8 w-8 text-slate-400 mb-2" />
-                        <span className="text-sm text-slate-600">{image ? image.name : "Click to upload image"}</span>
-                        <span className="text-xs text-slate-400 mt-1">PNG, JPG, GIF up to 10MB</span>
+                        <span className="text-sm text-slate-600">
+                          {images.length > 0 ? "Select more images" : "Click to upload images"}
+                        </span>
+                        <span className="text-xs text-slate-400 mt-1">PNG, JPG, GIF up to 10MB each</span>
                       </Label>
                     </div>
-
                     {errors.image && (
                       <Alert variant="destructive" className="py-2">
                         <AlertCircle className="h-4 w-4" />
@@ -277,16 +281,19 @@ export default function AdminPage() {
                       </Alert>
                     )}
                   </div>
-
-                  {/* Image Preview */}
-                  {imagePreview && (
-                    <div className="relative w-full h-48 mb-4">
-                      <Image
-                        src={imagePreview}
-                        alt="Preview"
-                        fill
-                        className="object-cover rounded-lg"
-                      />
+                  {/* Image Previews */}
+                  {imagePreviews.length > 0 && (
+                    <div className="flex gap-2 flex-wrap">
+                      {imagePreviews.map((src, idx) => (
+                        <div key={idx} className="relative w-32 h-32 mb-4">
+                          <Image
+                            src={src}
+                            alt={`Preview ${idx + 1}`}
+                            fill
+                            className="object-cover rounded-lg"
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

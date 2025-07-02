@@ -49,7 +49,11 @@ export function BlogPost({ post, featured = false }: BlogPostProps) {
       <Link href={`/blogs/${post.slug}`} className="block">
         <div className="relative">
           <Image
-            src={post.imageUrl || "/placeholder.svg?height=400&width=600"}
+            src={
+              (post.imageUrls && post.imageUrls.length > 0)
+                ? post.imageUrls[0]
+                : post.imageUrl || "/placeholder.svg?height=400&width=600"
+            }
             alt={post.title || "Blog post image"}
             width={featured ? 800 : 600}
             height={featured ? 500 : 400}
@@ -60,8 +64,7 @@ export function BlogPost({ post, featured = false }: BlogPostProps) {
         <div className={`${featured ? 'p-12' : 'p-8'}`}>
           <div className="text-gray-500 text-sm mb-2">
             {formatDate(post.createdAt)}
-            <span className="mx-2">•</span>
-            Blog Post
+            
           </div>
           <h2 className={`font-semibold text-gray-900 mb-2 ${
             featured ? 'text-3xl' : 'text-2xl'

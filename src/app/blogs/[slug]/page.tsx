@@ -3,6 +3,7 @@ import Link from "next/link"
 import { getBlogPost } from "@/lib/firebase"
 import { ArrowLeft, Calendar, Clock } from "lucide-react"
 import { ShareButton } from "./share-button"
+import ImageCarousel from "@/app/components/ImageCarousel"
 
 interface PostPageProps {
   params: Promise<{ slug: string }>
@@ -37,6 +38,7 @@ export default async function PostPage({ params }: PostPageProps) {
     summary: post.summary,
     content: post.content,
     imageUrl: post.imageUrl,
+    imageUrls: post.imageUrls || [],
     slug: post.slug,
     createdAt: post.createdAt?.toDate?.()?.toISOString() || null,
     updatedAt: post.updatedAt?.toDate?.()?.toISOString() || null
@@ -61,9 +63,9 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/">
-              <button className="text-gray-600 hover:text-gray-900">
+              <button className="text-gray-600 hover:text-gray-900 flex items-center">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Stories
+                <span>Back to Stories</span>
               </button>
             </Link>
             <ShareButton post={serializedPost} />
@@ -96,16 +98,22 @@ export default async function PostPage({ params }: PostPageProps) {
           )}
         </div>
 
-        {/* Hero Image */}
-        <div className="relative aspect-video rounded-2xl overflow-hidden mb-16 shadow-2xl">
-          <Image
-            src={post.imageUrl || "/placeholder.svg?height=600&width=1200"}
-            alt={post.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+        {/* Hero Image or Carousel */}
+        {serializedPost.imageUrls && serializedPost.imageUrls.length > 0 ? (
+          <ImageCarousel images={serializedPost.imageUrls} />
+        ) : (
+          <div className="relative aspect-video rounded-2xl overflow-hidden mb-16 shadow-2xl">
+            <Image
+              src={post.imageUrl || "/placeholder.svg?height=600&width=1200"}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+              width={800}   
+              height={450}
+            />
+          </div>
+        )}
       </div>
 
       {/* Content */}
